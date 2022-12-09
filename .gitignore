@@ -1,3 +1,4 @@
 /node_modules
 .env
 /server/public/uploads/*
+Octo-test-node-express.postman_collection.json
