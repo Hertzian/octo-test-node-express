@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
@@ -8,6 +9,9 @@ const app = express()
 app.use(express.json())
 
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'))
+
+// static public folder
+app.use(express.static(path.join(__dirname, 'server', 'public')))
 
 // routes
 app.use('/api', require('./server/routes/routes'))
