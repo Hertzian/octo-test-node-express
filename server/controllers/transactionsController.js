@@ -50,19 +50,9 @@ exports.test = (req, res) => {
  */
 exports.getData = async (req, res) => {
   const transactionsFromDB = await Transaction.findAll()
-  if (!transactionsFromDB.length) {
+  if (transactionsFromDB.length) {
     return fetchTransactions()
       .then(async (response) => {
-        if (!response || !response.length) {
-          const transactions = mapTransactions(readTransactionsFile())
-          const transactionsCreated = await Transaction.bulkCreate(transactions.transactions)
-
-          return res.json({
-            transactionsCount: transactionsCreated.length,
-            transactions: transactionsCreated
-          })
-        }
-
         const transactions = mapTransactions(response)
         const transactionsCreated = await Transaction.bulkCreate(transactions.transactions)
 
@@ -71,7 +61,17 @@ exports.getData = async (req, res) => {
           transactions: transactionsCreated
         })
       })
-      .catch((err) => console.log(err))
+      .catch(async (err) => {
+        // I know, this is a very ugly way to get the data, but I think it can be useful
+        const transactions = mapTransactions(readTransactionsFile())
+        const transactionsCreated = await Transaction.bulkCreate(transactions.transactions)
+
+        console.log(err)
+        return res.json({
+          transactionsCount: transactionsCreated.length,
+          transactions: transactionsCreated
+        })
+      })
   }
   return res.json({
     transactionsCount: transactionsFromDB.length,
@@ -133,13 +133,15 @@ exports.play = async (req, res) => {
         'transactionYear',
         'provider',
         'value'
-      ],
+      ]
       // logging: console.log
     })
 
     const transactionsCount = transactions.length
     const totalsPerYear = transactionsTotalsPerYear({ sort, transactions })
     const transactionsList = rawTransactions(transactions)
+
+    // prints on console a beautiful map with unsorted data grouped by year
     console.log(transactionsMapByYear(transactions))
 
     return res.json({
