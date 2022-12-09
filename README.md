@@ -1,3 +1,13 @@
+# octo-test-node-express
+
+Esta aplicación toma los datos de un API de [Iatistandard API Gateway](https://developer.iatistandard.org/apis) que extrae la ayuda humanitaria que Sudán ha recibido en los últimos años, separándola por año y mostrando la sumatoria general por organización de sus aportaciones.
+
+Requerimientos:
+```
+postgres 14
+node 16
+```
+
 Para poner en marcha el proyecto primero clonar el repositorio, una vez clonado:
 
 ```
@@ -65,24 +75,58 @@ Los endpoints expuestos son los siguientes:
 
 Para accesar a un endpoint de prueva.
 ```
-{{URL}}/
+{{URL}}/api/
 ```
 Genera un token para autenticar/autorizar el uso de los siguientes endpoints.
 ```
-{{URL}}/login
+{{URL}}/api/login
 ```
 Descarga los datos de la `API` a la `db` y muestra el resultado.
 ```
-{{URL}}/get-data
+{{URL}}/api/get-data
 ```
-Consulta la `db` por los datos requeridos, cabe mencionar que este endpoint admite los parámetros de `to`, `from` y `sort` de la siguiente manera:
+Consulta la `db` por los datos requeridos soportando parámetros. 
+El endpoint base es el siguiente: 
+```
+{{URL}}/api/play
+```
+Soporta los siguientes parámetros:
 ```
 to={{YEAR}}
 from={{YEAR}}
 sort={{ASC | DESC}}
-{{URL}}/play
 ```
 Un ejemplo válido para consultar las transacciones del año 2011 al 2022 en orden descendente, sería:
 ```
-{{URL}}/play?from=2011&to2022&sort=DESC
+{{URL}}/api/play?from=2011&to2022&sort=DESC
+```
+
+Hay diversos comandos en el `package.json`:
+- Inicia el servidor
+```
+npm run start
+```
+- Inicia el servidor en modo `development`.
+```
+npm run dev
+```
+- Inicia el línter y muestra el resultado del análisis.
+```
+npm run lint
+```
+- Inicia el línter, corrige y en caso de ser posible lo arregla.
+```
+npm run lint-fix
+```
+- Corre las migraciones de la `db`.
+```
+npm run migrate
+```
+- Da rollback a las migraciones.
+```
+npm run migrate:undo
+```
+- Descarga dependencias, corre migraciones y guarda seeds en db, se debe correr `UNA` sola vez este comando.
+```
+npm run initialize
 ```
