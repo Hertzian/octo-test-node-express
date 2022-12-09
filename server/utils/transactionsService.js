@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const axios = require('axios')
-const planBRrawData = JSON.parse(fs.readFileSync(path.join(__dirname, '../rawData.json'), 'utf-8')) // 1000 entries
+const planBRrawData = JSON.parse(fs.readFileSync(path.join(__dirname, '../../rawData.json'), 'utf-8')) // 1000 entries
 
 /**
  * I you can't access to the api this file contains a response from this url:

@@ -2,11 +2,12 @@ const { Op } = require('sequelize')
 const { Transaction } = require('../lib/db/models')
 const {
   transactionsService: {
-    // readTransactionsFile, // uncomment this if you can't access to the api
+    readTransactionsFile, // uncomment this if you can't access to the api
     fetchTransactions,
     mapTransactions,
     rawTransactions,
-    transactionsTotalsPerYear
+    transactionsTotalsPerYear,
+    transactionsMapByYear
   }
 } = require('../utils')
 
@@ -48,29 +49,34 @@ exports.test = (req, res) => {
  * }}
  */
 exports.getData = async (req, res) => {
-  try {
-    const transactionsFromDB = await Transaction.findAll()
-    if (!transactionsFromDB.length) {
-      const fetchedTransactions = await fetchTransactions()
+  const transactionsFromDB = await Transaction.findAll()
+  if (!transactionsFromDB.length) {
+    return fetchTransactions()
+      .then(async (response) => {
+        if (!response || !response.length) {
+          const transactions = mapTransactions(readTransactionsFile())
+          const transactionsCreated = await Transaction.bulkCreate(transactions.transactions)
 
-      // uncomment the next two lines if you don't have access to the api
-      // const rawTransactionsFromFile = readTransactionsFile()
-      // const transactions = mapTransactions(rawTransactionsFromFile)
+          return res.json({
+            transactionsCount: transactionsCreated.length,
+            transactions: transactionsCreated
+          })
+        }
 
-      // you should comment next line if you can't have access to the api
-      const transactions = mapTransactions(fetchedTransactions)
+        const transactions = mapTransactions(response)
+        const transactionsCreated = await Transaction.bulkCreate(transactions.transactions)
 
-      const transactionsCreated = await Transaction.bulkCreate(transactions.transactions)
-      return res.json({ transactionsCount: transactionsCreated.length, transactions: transactionsCreated })
-    }
-
-    return res.json({
-      transactionsCount: transactionsFromDB.length,
-      transactions: transactionsFromDB
-    })
-  } catch (err) {
-    console.log(err)
+        return res.json({
+          transactionsCount: transactionsCreated.length,
+          transactions: transactionsCreated
+        })
+      })
+      .catch((err) => console.log(err))
   }
+  return res.json({
+    transactionsCount: transactionsFromDB.length,
+    transactions: transactionsFromDB
+  })
 }
 
 /**
@@ -128,12 +134,13 @@ exports.play = async (req, res) => {
         'provider',
         'value'
       ],
-      logging: console.log
+      // logging: console.log
     })
 
     const transactionsCount = transactions.length
     const totalsPerYear = transactionsTotalsPerYear({ sort, transactions })
     const transactionsList = rawTransactions(transactions)
+    console.log(transactionsMapByYear(transactions))
 
     return res.json({
       transactionsCount,
