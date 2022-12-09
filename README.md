@@ -2,7 +2,7 @@
 
 Esta aplicación toma los datos de un API de [Iatistandard API Gateway](https://developer.iatistandard.org/apis) que extrae la ayuda humanitaria que Sudán ha recibido en los últimos años, separándola por año y mostrando la sumatoria general por organización de sus aportaciones.
 
-Requerimientos:
+## Requerimientos
 ```
 postgres 14
 node 16
@@ -13,6 +13,8 @@ Para poner en marcha el proyecto primero clonar el repositorio, una vez clonado:
 ```
 cd pulpo-assignment-test
 ```
+
+## Variables de entorno
 
 Dentro del proyecto poner especial atención al `.env` y el `.env.example`, seguir los siguientes pasos:
 
@@ -69,11 +71,22 @@ Una vez colocado las respectivas variables en el `.env`, ejecutar el siguiente c
 ```
 npm run initialize
 ```
+Y para poner a correr el servidor en el modo `develop`:
+```
+npm run dev
+```
+## Endpoints
 
 Los endpoints expuestos son los siguientes:
 
+[Documentación de los endpoints de postman]( https://documenter.getpostman.com/view/4612589/2s8YzRz3MR)
 
-Para accesar a un endpoint de prueva.
+
+Documentación general de los endpoints.
+```
+{{URL}}/
+```
+Para accesar a un endpoint de prueba.
 ```
 {{URL}}/api/
 ```
@@ -82,10 +95,12 @@ Genera un token para autenticar/autorizar el uso de los siguientes endpoints.
 {{URL}}/api/login
 ```
 Descarga los datos de la `API` a la `db` y muestra el resultado.
+Este endpoint necesita el header de Authorization con `Bearer ` y el token generado en el endpoint de `login`.
 ```
 {{URL}}/api/get-data
 ```
 Consulta la `db` por los datos requeridos soportando parámetros. 
+Este endpoint necesita el header de Authorization con `Bearer ` y el token generado en el endpoint de `login`.
 El endpoint base es el siguiente: 
 ```
 {{URL}}/api/play
@@ -101,6 +116,7 @@ Un ejemplo válido para consultar las transacciones del año 2011 al 2022 en ord
 {{URL}}/api/play?from=2011&to2022&sort=DESC
 ```
 
+## Comandos generales
 Hay diversos comandos en el `package.json`:
 - Inicia el servidor
 ```
